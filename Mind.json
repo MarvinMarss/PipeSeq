@@ -1,0 +1,11 @@
+{
+    "sratoolkit_path": "C:\\PipeSeq-3\\Tool\\sratoolkit.3.1.1-win64\\bin",
+    "sra_download_folder": "C:\\PipeSeq-3\\Sra",
+    "fastq_output_folder": "C:\\PipeSeq-3\\Fastq",
+    "delete_sra_after_conversion": false,
+    "single_thread_processing": true,
+    "delete_intermediate_files": true,
+    "convert_sra_singlethreaded": true,
+    "convert_as_single_end": true,
+    "enable_interleaving": true
+}

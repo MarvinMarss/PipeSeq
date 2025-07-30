@@ -1,0 +1,37 @@
+{
+    "folders": {
+        "fastq_folder": "C:\\PipeSeq-3\\Fastq",
+        "bam_folder": "C:\\PipeSeq-3\\Output",
+        "gtf_folder": "C:\\PipeSeq-3\\GTF",
+        "results_folder": "C:\\PipeSeq-3\\Results",
+        "genome_index": "C:\\PipeSeq-3\\Genome\\Index",
+        "genome_folder": "C:\\PipeSeq-3\\Genome"
+    },
+    "options": {
+        "delete_intermediate_files": false,
+        "use_fdr_correction": false,
+        "fix_genome": false,
+        "strict_annotation": false,
+        "stringtie_sensitivity": 0.001,
+        "use_deseq2": true,
+        "use_stringtie": false
+    },
+    "gene_mapping": {
+        "CHLRE_01g025050v5": "GATA-1",
+        "CHLRE_10g435450v5": "GATA-2",
+        "CHLRE_08g378800v5": "GATA-3",
+        "CHLRE_11g467581v5": "GATA-4",
+        "CHLRE_03g160600v5": "GATA-5",
+        "CHLRE_03g160700v5": "GATA-6",
+        "CHLRE_05g242600v5": "GATA-7",
+        "CHLRE_06g266850v5": "GATA-8",
+        "CHLRE_06g266950v5": "GATA-9",
+        "CHLRE_07g319701v5": "GATA-10",
+        "CHLRE_08g358532v5": "GATA-11",
+        "CHLRE_08g358534v5": "GATA-12",
+        "CHLRE_06g289550v5": "Matrix"
+    },
+    "visualization": {
+        "show_p_values": true
+    }
+}

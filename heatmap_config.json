@@ -1,0 +1,32 @@
+{
+  "title": "Expression of genes of transcription factors of the GATA-TPM",
+  "xlabel": "Gene names",
+  "ylabel": "Terms",
+  "color_low": "blue",
+  "color_mid": "white",
+  "color_high": "green",
+  "show_p_values": false,
+  "custom_condition_order": [
+    "0.5 hours acclimatization to light",
+    "Acclimatization to darkness",
+    "Hour with increased illumination"
+  ],
+  "custom_gene_order": [
+    "GATA-1",
+    "GATA-2",
+    "GATA-3",
+    "GATA-4",
+    "GATA-5",
+    "GATA-6",
+    "GATA-7",
+    "GATA-8",
+    "GATA-9",
+    "GATA-10",
+    "GATA-11",
+    "GATA-12",
+    "Control-RPL32"
+  ],
+  "sort_conditions_by_max_exp": false,
+  "sort_genes_by_max_exp": false,
+  "remove_color_for_high_p": false
+}
