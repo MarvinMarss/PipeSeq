@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import re
 from tkinter import Tk, Label, Entry, Button, StringVar, BooleanVar, Checkbutton, filedialog, Listbox
 from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
+import sys
 
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -59,7 +60,8 @@ def load_or_ask_config(possible_conditions, possible_genes):
         "custom_gene_order": possible_genes,
         "sort_conditions_by_max_exp": False,
         "sort_genes_by_max_exp": False,
-        "remove_color_for_high_p": False
+        "remove_color_for_high_p": False,
+        "generate_histograms": False
     }
     if os.path.exists(config_path):
         with open(config_path, "r") as f:
@@ -110,6 +112,12 @@ def load_or_ask_config(possible_conditions, possible_genes):
     Checkbutton(root, text="Сортировать условия по максимальной экспрессии (log2)", variable=sort_conditions_var).grid(row=8, column=0, columnspan=3, sticky="w")
     Checkbutton(root, text="Сортировать гены по максимальной экспрессии (Control всегда первым)", variable=sort_genes_var).grid(row=9, column=0, columnspan=3, sticky="w")
     Checkbutton(root, text="Убрать цвет у ячеек с p-value > 0.05 и уменьшить шрифт в 2 раза", variable=remove_color_var).grid(row=10, column=0, columnspan=3, sticky="w")
+    generate_hist_var = BooleanVar(value=config.get("generate_histograms", False))
+    Checkbutton(
+        root,
+        text="Гистограммы по генам вместо тепловой карты",
+        variable=generate_hist_var
+    ).grid(row=11, column=0, columnspan=3, sticky="w")
 
     def update_summary(*args):
         summary = (
@@ -141,7 +149,7 @@ def load_or_ask_config(possible_conditions, possible_genes):
     update_summary()
 
 
-    Label(root, text="Порядок условий:").grid(row=11, column=0, sticky="w")
+    Label(root, text="Порядок условий:").grid(row=12, column=0, sticky="w")
     condition_listbox = Listbox(root, selectmode="single", exportselection=False, height=6)
     condition_listbox.grid(row=11, column=1)
     for item in possible_conditions:
@@ -173,7 +181,7 @@ def load_or_ask_config(possible_conditions, possible_genes):
     Button(root, text="↓", command=move_down_cond).grid(row=11, column=2, sticky="s")
 
 
-    Label(root, text="Порядок генов:").grid(row=12, column=0, sticky="w")
+    Label(root, text="Порядок генов:").grid(row=13, column=0, sticky="w")
     gene_listbox = Listbox(root, selectmode="single", exportselection=False, height=6)
     gene_listbox.grid(row=12, column=1)
     for item in possible_genes:
@@ -218,11 +226,12 @@ def load_or_ask_config(possible_conditions, possible_genes):
         config["sort_conditions_by_max_exp"] = sort_conditions_var.get()
         config["sort_genes_by_max_exp"] = sort_genes_var.get()
         config["remove_color_for_high_p"] = remove_color_var.get()
+        config["generate_histograms"] = generate_hist_var.get()
         with open(config_path, "w") as f:
             json.dump(config, f, indent=2)
         root.destroy()
 
-    Button(root, text="Сохранить и продолжить", command=save_and_close).grid(row=13, column=0, columnspan=3, pady=10)
+    Button(root, text="Сохранить и продолжить", command=save_and_close).grid(row=14, column=0, columnspan=3, pady=10)
 
     root.mainloop()
     return config
@@ -260,6 +269,52 @@ df["GATA Name"] = pd.Categorical(df["GATA Name"], categories=gene_order, ordered
 
 heatmap_data = df.pivot(index="Base Name", columns="GATA Name", values="log2(Exp/Control)")
 annotations = df.pivot(index="Base Name", columns="GATA Name", values="p-value")
+def sanitize_filename(name):
+    return re.sub(r'[\\/*?:"<>|]', "_", name)
+
+import subprocess 
+
+if cfg.get("generate_histograms", False):
+
+    folder = os.path.join(
+        results_folder,
+        sanitize_filename(cfg["title"]) + "_histograms"
+    )
+    os.makedirs(folder, exist_ok=True)
+ 
+    folder = os.path.abspath(folder)
+    print(f"Гистограммы будут сохранены тут: {folder}")
+
+    for gene in gene_order:
+    
+        series = heatmap_data[gene]
+        conditions = list(series.index)
+        values = list(series.values)
+
+        plt.figure(figsize=(8, 5))
+        plt.bar(range(len(conditions)), values, edgecolor='black')
+        plt.xticks(range(len(conditions)), conditions, rotation=45, ha='right')
+        plt.title(f"{gene}: Expression change across conditions")
+        plt.xlabel("Conditions")
+        plt.ylabel("Log2(Exp/Control)")
+        plt.tight_layout()
+
+        out_path = os.path.join(folder, sanitize_filename(gene) + ".png")
+        plt.savefig(out_path, dpi=300)
+        plt.close()
+
+    try:
+        if sys.platform == "win32":
+            os.startfile(folder)
+        elif sys.platform == "darwin":
+            subprocess.call(["open", folder])
+        else:
+            subprocess.call(["xdg-open", folder])
+    except Exception as e:
+        print(f"Не удалось автоматически открыть папку: {e}")
+
+    print("Гистограммы успешно сохранены.")
+    sys.exit(0)
 
 vmax = max(abs(heatmap_data.min().min()), abs(heatmap_data.max().max()))
 vmin = -vmax
