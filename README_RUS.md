@@ -17,6 +17,8 @@ pip install pandas numpy scipy seaborn matplotlib pyDESeq2
 
 pip install pywin32
 
+pip install statsmodels
+
 
 wsl --install -d Ubuntu
 Дождись завершения установки. Перезагрузи ПК, если попросят.
@@ -68,7 +70,7 @@ SRX8380271-HighLight1; SRX8380270-HighLight2; SRX8380269-HighLight3; SRX5120532-
 
 ## Структура проекта
 
-```bash
+```
 PipeSeq/
 ├── align_hisat2.py             # Выравнивание FASTQ -> SAM (HISAT2)
 ├── process_sam_to_bam.py       # SAM -> BAM + сортировка
@@ -119,13 +121,13 @@ PipeSeq/
 
 ## Запуск пайплайна
 
-```bash
+```
 python run_gui.py
 ```
 
 Или запуск по шагам:
 
-```bash
+```
 python align_hisat2.py
 python process_sam_to_bam.py
 python stringtie_expression.py
@@ -179,6 +181,8 @@ winget uninstall Python.Python.3.12
 # Удаление всех Python-пакетов
 pip uninstall -y PyQt6 pandas numpy scipy seaborn matplotlib pyDESeq2
 
+pip uninstall statsmodels
+
 # Удаление WSL
 wsl --uninstall
 Дождись завершения удаления.
@@ -192,7 +196,7 @@ powershell
 4. Удаление Python-окружения в Ubuntu:
 Если ты использовал виртуальное окружение Python, выполни следующие команды:
 
-bash
+
 
 # Деактивация окружения
 deactivate
@@ -200,7 +204,7 @@ deactivate
 # Удаление изолированного окружения Python
 rm -rf ~/pipeseq_env
 5. Удаление всех установленных пакетов и инструментов в Ubuntu:
-bash
+
 
 # Удаление всех установленных пакетов
 sudo apt purge -y python3-venv build-essential zlib1g-dev \
@@ -218,29 +222,28 @@ sudo apt clean
 
 Удалите файл settings.json, если хотите сбросить все настройки:
 
-bash
+
 
 rm -rf ~/pipeSeq/settings.json
 Удалите все промежуточные файлы (например, файлы в папках с результатами и логами):
 
-bash
+
 
 rm -rf ~/pipeSeq/results
 rm -rf ~/pipeSeq/logs
 7. Удаление папки с программой PipeSeq (если она была установлена локально):
-bash
+
 
 rm -rf ~/pipeSeq
 8. Удаление установленных SRA инструментов:
 Если установил SRA Toolkit, можно выполнить команду для его удаления:
 
-bash
+
 
 winget uninstall SRA.SRA-Toolkit
 9. Очистка среды
 Если ты не собираешься использовать WSL и Ubuntu больше:
 
-powershell
 
 # Удаление Ubuntu из Windows
 wsl --unregister Ubuntu

@@ -7,26 +7,24 @@ Press Win + X → select Windows PowerShell (Admin) or Terminal (Admin).
 2. Install Python and WSL (Ubuntu)
 In PowerShell, run:
 
-powershell
 
 winget install -e --id Python.Python.3.12
 Restart the terminal, then install Python packages:
 
-bash
+
 
 pip install PyQt6
 pip install pandas numpy scipy seaborn matplotlib pyDESeq2
 pip install pywin32
+pip install statsmodels
 Install WSL with Ubuntu:
-
-powershell
 
 wsl --install -d Ubuntu
 Reboot the PC if prompted.
 
 3. After reboot — open PowerShell (Admin):
 
-powershell
+
 
 wsl --install -d Ubuntu
 wsl
@@ -34,7 +32,7 @@ Ubuntu will launch. Follow the prompts to set a username and password (any memor
 
 4. Inside Ubuntu — set up the environment:
 
-bash
+
 
 # System update
 sudo apt update && sudo apt upgrade -y
@@ -67,7 +65,7 @@ SRX8380271-HighLight1; SRX8380270-HighLight2; SRX8380269-HighLight3; SRX5120532-
 Replicate numbers go at the end. You may also use local .sra files renamed accordingly.
 
 Project Structure
-bash
+
 
 PipeSeq/
 ├── align_hisat2.py             
@@ -110,12 +108,12 @@ json
   }
 }
 Running the Pipeline
-bash
+
 
 python run_gui.py
 Or step-by-step:
 
-bash
+
 
 python align_hisat2.py
 python process_sam_to_bam.py
@@ -151,57 +149,90 @@ All WSL paths are auto-converted (e.g., /mnt/c/...).
 
 If needed, use fix.gtf.py to correct annotation errors.
 
-Uninstalling the Environment
+Removing the Environment from PC
+To completely remove all installed programs and settings, follow these steps.
+
 1. Open PowerShell as Administrator
+Press Win + X → select Windows PowerShell (Admin) or Terminal (Admin).
 
-2. Remove WSL and Python:
+2. Uninstall WSL and Ubuntu
+Paste the following in PowerShell:
 
-powershell
-
+# Uninstall installed Python
 winget uninstall Python.Python.3.12
+
+# Uninstall all Python packages
 pip uninstall -y PyQt6 pandas numpy scipy seaborn matplotlib pyDESeq2
+
+pip uninstall statsmodels
+
+# Uninstall WSL
 wsl --uninstall
-Wait for uninstallation to complete.
+Wait for the uninstallation to finish.
 
-3. Confirm Ubuntu is fully removed:
+3. Remove all Ubuntu settings and environments
+After that, to delete all Ubuntu settings and environments, open PowerShell (Admin) again:
 
-powershell
+Make sure Ubuntu is completely removed.
 
-wsl --unregister Ubuntu
-4. If using a Python virtual environment in Ubuntu:
+4. Remove Python environment in Ubuntu
+If you used a Python virtual environment, run the following commands:
 
-bash
 
+
+
+# Deactivate the environment
 deactivate
+
+# Remove the isolated Python environment
 rm -rf ~/pipeseq_env
-5. Remove all installed packages/tools in Ubuntu:
+5. Remove all installed packages and tools in Ubuntu
 
-bash
 
+
+# Uninstall all installed packages
 sudo apt purge -y python3-venv build-essential zlib1g-dev \
   libbz2-dev liblzma-dev libncurses5-dev libncursesw5-dev \
   libcurl4-openssl-dev libssl-dev libsqlite3-dev wget curl \
   git unzip samtools hisat2 stringtie libgl1 libxkbcommon-x11-0
+
+# Clean up the system
 sudo apt autoremove -y
 sudo apt clean
-6. Remove PipeSeq files and configs:
+6. Remove PipeSeq files and settings
+To completely remove everything related to the pipeline, delete the following folders and files:
 
-bash
+Delete the folder with genomes and annotations if it was downloaded.
+
+Delete settings.json if you want to reset all settings:
+
+
+
 
 rm -rf ~/pipeSeq/settings.json
+Delete all intermediate files (e.g., result and log folders):
+
+
+
+
 rm -rf ~/pipeSeq/results
 rm -rf ~/pipeSeq/logs
-rm -rf ~/pipeSeq
-7. Uninstall SRA Toolkit (if installed):
+7. Delete the PipeSeq program folder (if locally installed):
 
-powershell
+
+
+rm -rf ~/pipeSeq
+8. Uninstall SRA Tools
+If you installed the SRA Toolkit, you can remove it with:
+
+
+
 
 winget uninstall SRA.SRA-Toolkit
-8. Fully clean up WSL and Ubuntu (if no longer needed):
+9. Clean up the environment
+If you're no longer going to use WSL and Ubuntu:
 
-powershell
-
+# Unregister Ubuntu from Windows
 wsl --unregister Ubuntu
 Support
-For issues or questions, contact:
 alexnerezenko@gmail.com
