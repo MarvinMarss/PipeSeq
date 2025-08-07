@@ -65,7 +65,7 @@ class PipelineApp(QWidget):
             json.dump(self.settings, f, indent=4)
 
     def init_ui(self):
-        self.setWindowTitle("PipeSeq - Запуск пайплайна")
+        self.setWindowTitle("PipeSeq - Launching the pipeline")
         self.resize(600, 500)
 
         self.setStyleSheet("""
@@ -78,7 +78,7 @@ class PipelineApp(QWidget):
 
         layout = QVBoxLayout()
 
-        title = QLabel("PipeSeq - Запуск пайплайна")
+        title = QLabel("PipeSeq - Launching the pipeline")
         title.setFont(QFont("Arial", 20, QFont.Weight.Bold))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
@@ -89,19 +89,23 @@ class PipelineApp(QWidget):
         self.log_output.setReadOnly(True)
         layout.addWidget(self.log_output)
 
-        self.run_pipeline_btn = QPushButton("Запустить пайплайн")
+        self.run_pipeline_btn = QPushButton("Launch pipeline")
         self.run_pipeline_btn.clicked.connect(self.run_pipeline)
         layout.addWidget(self.run_pipeline_btn)
 
-        self.run_visualization_btn = QPushButton("Визуализация (Heatmap)")
+        self.run_visualization_btn = QPushButton("Heatmap")
         self.run_visualization_btn.clicked.connect(self.run_visualization)
         layout.addWidget(self.run_visualization_btn)
 
-        self.run_replace_btn = QPushButton("Заменить Base Names (GUI)")
+        self.run_replace_btn = QPushButton("Replace Base Names (GUI)")
         self.run_replace_btn.clicked.connect(self.run_replace_base_names)
         layout.addWidget(self.run_replace_btn)
 
-        self.cleanup_btn = QPushButton("Очистить всё (кроме генома)")
+        self.ct_analysis_btn = QPushButton("RT-qPCR Analysis")
+        self.ct_analysis_btn.clicked.connect(self.run_ct_analysis)
+        layout.addWidget(self.ct_analysis_btn)
+
+        self.cleanup_btn = QPushButton("Clear everything (except genome)")
         self.cleanup_btn.clicked.connect(self.cleanup_all_data)
         layout.addWidget(self.cleanup_btn)
 
@@ -120,19 +124,15 @@ class PipelineApp(QWidget):
             log_file.write(message + "\n")
 
     def show_error_dialog(self, title, message):
-        """
-        Выводит окно с описанием ошибки и тремя вариантами:
-        «Запустить снова», «Пропустить шаг» и «Завершить процессы».
-        Возвращает: "retry", "skip" или "cancel"
-        """
+
         msg_box = QMessageBox(self)
         msg_box.setIcon(QMessageBox.Icon.Critical)
         msg_box.setWindowTitle(title)
         msg_box.setText(message)
 
-        retry_btn = msg_box.addButton("Запустить снова", QMessageBox.ButtonRole.AcceptRole)
-        skip_btn = msg_box.addButton("Пропустить шаг", QMessageBox.ButtonRole.DestructiveRole)
-        cancel_btn = msg_box.addButton("Завершить процессы", QMessageBox.ButtonRole.RejectRole)
+        retry_btn = msg_box.addButton("Run again", QMessageBox.ButtonRole.AcceptRole)
+        skip_btn = msg_box.addButton("Skip step", QMessageBox.ButtonRole.DestructiveRole)
+        cancel_btn = msg_box.addButton("End processes", QMessageBox.ButtonRole.RejectRole)
 
         msg_box.exec()
 
@@ -146,28 +146,28 @@ class PipelineApp(QWidget):
     def run_pipeline(self):
         self.progress_bar.setValue(0)
         self.log_output.clear()
-        self.log("Запуск пайплайна...\n")
+        self.log("Launch pipeline...\n")
 
 
         if self.settings["options"].get("fix_genome"):
-            self.log("Исправление геномного файла...")
+            self.log("Correction of the genome file...")
             while True:
                 try:
                     fix_script = os.path.join(script_dir, "fix.gtf.py")
                     subprocess.run(["python", fix_script], check=True)
-                    self.log("Геном исправлен\n")
+                    self.log("Genome corrected\n")
                     break
                 except subprocess.CalledProcessError as e:
-                    self.log(f"Ошибка исправления генома: {e}")
-                    choice = self.show_error_dialog("Ошибка исправления генома", f"Ошибка исправления генома: {e}\n\nХотите повторить попытку, пропустить этап или завершить процессы?")
+                    self.log(f"Genome Correction Error: {e}")
+                    choice = self.show_error_dialog("Genome Correction Error", f"Genome Correction Error: {e}\n\nDo you want to try again, skip a step, or end processes?")
                     if choice == "retry":
                         continue
                     elif choice == "skip":
-                        self.log("Этап исправления генома пропущен.\n")
+                        self.log("The genome correction stage has been skipped.\n")
                         break
                     else:
-                        self.log("Пайплайн прерван пользователем.")
-                        QMessageBox.information(self, "Прервано", "Пайплайн был завершён.")
+                        self.log("Pipeline interrupted by user.")
+                        QMessageBox.information(self, "Interrupted", "Pipeline has been completed.")
                         return
 
 
@@ -179,8 +179,8 @@ class PipelineApp(QWidget):
                 if step not in steps:
                     steps.append(step)
         if not steps:
-            self.log("Не выбран ни один метод анализа.")
-            QMessageBox.warning(self, "Ошибка", "В настройках не выбран ни один метод анализа (StringTie или DESeq2).")
+            self.log("No analysis method selected.")
+            QMessageBox.warning(self, "Error", "No analysis method (StringTie or DESeq2) is selected in the settings.")
             return
         if not any("GTF_results_pvalues.py" in s for s, _ in steps):
             steps.insert(-1, ("GTF_results_pvalues.py", "Расчёт p-values"))
@@ -193,15 +193,15 @@ class PipelineApp(QWidget):
             full_path = os.path.join(script_dir, script)
             while True:
                 if not os.path.exists(full_path):
-                    self.log(f"Скрипт {script} не найден!")
-                    choice = self.show_error_dialog("Ошибка", f"Скрипт {script} для шага '{description}' не найден.\n\nХотите запустить этот шаг снова, пропустить его или завершить процессы?")
+                    self.log(f"Script {script} not found!")
+                    choice = self.show_error_dialog("Error", f"Script {script} для шага '{description}' not found.\n\nDo you want to run this step again, skip it, or terminate the processes?")
                     if choice == "retry":
                         continue
                     elif choice == "skip":
                         break
                     else:
-                        self.log("Пайплайн прерван пользователем.")
-                        QMessageBox.information(self, "Прервано", "Пайплайн был завершён.")
+                        self.log("Pipeline interrupted by user.")
+                        QMessageBox.information(self, "Interrupted", "Pipeline has been completed.")
                         return
                 self.log(f"Запуск {description} [{script}]...")
                 try:
@@ -210,26 +210,26 @@ class PipelineApp(QWidget):
                     self.progress_bar.setValue(self.progress_bar.value() + 1)
                     break
                 except subprocess.CalledProcessError as e:
-                    self.log(f"Ошибка в {description}: {e}")
-                    choice = self.show_error_dialog("Ошибка", f"Ошибка при выполнении {description}: {e}\n\nХотите повторить шаг, пропустить его или завершить процессы?")
+                    self.log(f"Error в {description}: {e}")
+                    choice = self.show_error_dialog("Error", f"Error при выполнении {description}: {e}\n\nDo you want to repeat a step, skip it, or end processes?")
                     if choice == "retry":
                         continue
                     elif choice == "skip":
                         break
                     else:
-                        self.log("Пайплайн прерван пользователем.")
-                        QMessageBox.information(self, "Прервано", "Пайплайн был завершён.")
+                        self.log("Pipeline interrupted by user.")
+                        QMessageBox.information(self, "Interrupted", "Pipeline has been completed.")
                         return
 
 
         if self.settings["options"].get("delete_intermediate_files"):
             self.clean_intermediate_files()
 
-        self.log("Пайплайн успешно завершён!\n")
-        QMessageBox.information(self, "Готово", "Анализ завершён успешно.")
+        self.log("Pipeline successfully completed!\n")
+        QMessageBox.information(self, "Done", "Analysis completed successfully.")
 
     def clean_intermediate_files(self):
-        self.log("Удаление промежуточных файлов...")
+        self.log("Removing intermediate files...")
         bam_folder = self.settings["folders"].get("bam_folder", "")
         if bam_folder and os.path.exists(bam_folder):
             for file in os.listdir(bam_folder):
@@ -237,16 +237,16 @@ class PipelineApp(QWidget):
                     path = os.path.join(bam_folder, file)
                     try:
                         os.remove(path)
-                        self.log(f"Удалён файл: {path}")
+                        self.log(f"File deleted: {path}")
                     except Exception as e:
-                        self.log(f"Не удалось удалить {path}: {e}")
+                        self.log(f"Failed to delete {path}: {e}")
 
     def run_visualization(self):
         script_name = "temp_card_p.py" if self.settings["visualization"].get("show_p_values", True) else "temp_card.py"
         script_path = os.path.join(script_dir, script_name)
         if not os.path.exists(script_path):
             self.log(f"Визуализация: {script_name} не найден!")
-            QMessageBox.critical(self, "Ошибка", f"{script_name} отсутствует.")
+            QMessageBox.critical(self, "Error", f"{script_name} отсутствует.")
             return
 
         self.log(f"Запуск {script_name}...")
@@ -254,20 +254,35 @@ class PipelineApp(QWidget):
             subprocess.run(["python", script_path], check=True)
             self.log(f"Визуализация завершена.")
         except subprocess.CalledProcessError as e:
-            self.log(f"Ошибка в {script_name}: {e}")
+            self.log(f"Error в {script_name}: {e}")
 
     def run_replace_base_names(self):
         script = os.path.join(script_dir, "Replace_Base_Names_Gui.py")
         if not os.path.exists(script):
             self.log(f"Скрипт Replace_Base_Names_Gui.py не найден!")
-            QMessageBox.critical(self, "Ошибка", f"Replace_Base_Names_Gui.py отсутствует.")
+            QMessageBox.critical(self, "Error", f"Replace_Base_Names_Gui.py отсутствует.")
             return
         self.log("Запуск Replace_Base_Names_Gui.py")
         try:
             subprocess.run(["python", script], check=True)
             self.log(f"Заменены имена Base Name.")
         except subprocess.CalledProcessError as e:
-            self.log(f"Ошибка в {script}: {e}")
+            self.log(f"Error в {script}: {e}")
+
+    def run_ct_analysis(self):
+      
+        script = os.path.join(script_dir, "ct_analysis_qpcr.py")
+        if not os.path.exists(script):
+            self.log(f"Скрипт {os.path.basename(script)} не найден!")
+            QMessageBox.critical(self, "Error", f"{os.path.basename(script)} отсутствует.")
+            return
+        self.log("Запуск RT-qPCR Analysis...")
+        try:
+            subprocess.run([sys.executable, script], check=True)
+            self.log("RT-qPCR Analysis завершён.\n")
+        except subprocess.CalledProcessError as e:
+            self.log(f"Error в {os.path.basename(script)}: {e}")
+
 
     def cleanup_all_data(self):
         script_dir_local = os.path.dirname(os.path.abspath(__file__))
