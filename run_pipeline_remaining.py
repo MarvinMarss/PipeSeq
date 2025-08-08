@@ -105,6 +105,10 @@ class PipelineApp(QWidget):
         self.ct_analysis_btn.clicked.connect(self.run_ct_analysis)
         layout.addWidget(self.ct_analysis_btn)
 
+        self.ALLTABLE_btn = QPushButton("Corelation Analysis")
+        self.ALLTABLE_btn.clicked.connect(self.run_cor_analysis)
+        layout.addWidget(self.ALLTABLE_btn)
+
         self.cleanup_btn = QPushButton("Clear everything (except genome)")
         self.cleanup_btn.clicked.connect(self.cleanup_all_data)
         layout.addWidget(self.cleanup_btn)
@@ -280,6 +284,20 @@ class PipelineApp(QWidget):
         try:
             subprocess.run([sys.executable, script], check=True)
             self.log("RT-qPCR Analysis завершён.\n")
+        except subprocess.CalledProcessError as e:
+            self.log(f"Error в {os.path.basename(script)}: {e}")
+
+    def run_cor_analysis(self):
+      
+        script = os.path.join(script_dir, "ALLTABLE.py")
+        if not os.path.exists(script):
+            self.log(f"Скрипт {os.path.basename(script)} не найден!")
+            QMessageBox.critical(self, "Error", f"{os.path.basename(script)} отсутствует.")
+            return
+        self.log("Запуск Analysis...")
+        try:
+            subprocess.run([sys.executable, script], check=True)
+            self.log("Analysis завершён.\n")
         except subprocess.CalledProcessError as e:
             self.log(f"Error в {os.path.basename(script)}: {e}")
 
