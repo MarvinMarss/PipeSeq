@@ -2,10 +2,10 @@ Environment Setup on a New PC
 Before first use, all dependencies must be installed.
 
 1. Open PowerShell as Administrator
-Press Win + X → select Windows PowerShell (Admin) or Terminal (Admin).
-
+   Press Win + X → select Windows PowerShell (Admin) or Terminal (Admin).
 2. Install Python and WSL (Ubuntu)
-In PowerShell, run:
+   In PowerShell, run:
+
 
 
 winget install -e --id Python.Python.3.12
@@ -35,22 +35,30 @@ Ubuntu will launch. Follow the prompts to set a username and password (any memor
 
 
 # System update
-sudo apt update && sudo apt upgrade -y
+
+sudo apt update \&\& sudo apt upgrade -y
 sudo add-apt-repository universe
 sudo add-apt-repository multiverse
 sudo apt update
 
+sudo apt-get update \&\& sudo apt-get install subread
+
+
+
 # Install required packages
-sudo apt install -y python3-venv build-essential zlib1g-dev \
-  libbz2-dev liblzma-dev libncurses-dev \
-  libcurl4-openssl-dev libssl-dev libsqlite3-dev wget curl \
-  git unzip samtools hisat2 stringtie libgl1 libxkbcommon-x11-0
+
+sudo apt install -y python3-venv build-essential zlib1g-dev   
+libbz2-dev liblzma-dev libncurses-dev   
+libcurl4-openssl-dev libssl-dev libsqlite3-dev wget curl   
+git unzip samtools hisat2 stringtie libgl1 libxkbcommon-x11-0
 
 # Create Python virtual environment
-python3 -m venv ~/pipeseq_env
-source ~/pipeseq_env/bin/activate
+
+python3 -m venv ~/pipeseq\_env
+source ~/pipeseq\_env/bin/activate
 
 # Upgrade pip and install Python packages
+
 pip install --upgrade pip
 pip install pandas numpy scipy seaborn matplotlib pyqt6 pyDESeq2
 5. Running the Pipeline
@@ -61,65 +69,68 @@ Double-click PipeSeq.bat to launch the pipeline GUI.
 8. To begin analysis, input experiment IDs and assigned names in this format:
 
 
+
 SRX8380271-HighLight1; SRX8380270-HighLight2; SRX8380269-HighLight3; SRX5120532-HighLightControl1; SRX5120531-HighLightControl2; SRX5120530-HighLightControl3
 Replicate numbers go at the end. You may also use local .sra files renamed accordingly.
 
 Project Structure
 
 
+
 PipeSeq/
-├── align_hisat2.py             
-├── process_sam_to_bam.py       
-├── stringtie_expression.py     
-├── extract_fpkm.py             
-├── pvalues_log2.py             
-├── GTF_results_pvalues.py      
-├── temp_card_p.py              
-├── fix.gtf.py                  
-├── run_gui.py                  
-├── settings.json               
-└── pipeline_log.txt            
+├── align\_hisat2.py  
+├── process\_sam\_to\_bam.py  
+├── stringtie\_expression.py  
+├── extract\_fpkm.py  
+├── pvalues\_log2.py  
+├── GTF\_results\_pvalues.py  
+├── temp\_card\_p.py  
+├── fix.gtf.py  
+├── run\_gui.py  
+├── settings.json  
+└── pipeline\_log.txt  
 settings.json Configuration
 json
 
 {
-  "folders": {
-    "fastq_folder": "path to FASTQ files",
-    "bam_folder": "path for BAM output",
-    "gtf_folder": "path to StringTie GTF files",
-    "results_folder": "path to final tables",
-    "genome_folder": "path to .fa and .gtf files",
-    "genome_index": "path to HISAT2 index"
-  },
-  "options": {
-    "delete_intermediate_files": true,
-    "use_fdr_correction": true,
-    "fix_genome": false
-  },
-  "stringtie": {
-    "coverage_cutoff": 0.01
-  },
-  "gene_mapping": {
-    "CHLRE_01g025050v5": "GATA-1",
-    "CHLRE_10g435450v5": "GATA-2"
-  },
-  "visualization": {
-    "show_p_values": true
-  }
+"folders": {
+"fastq\_folder": "path to FASTQ files",
+"bam\_folder": "path for BAM output",
+"gtf\_folder": "path to StringTie GTF files",
+"results\_folder": "path to final tables",
+"genome\_folder": "path to .fa and .gtf files",
+"genome\_index": "path to HISAT2 index"
+},
+"options": {
+"delete\_intermediate\_files": true,
+"use\_fdr\_correction": true,
+"fix\_genome": false
+},
+"stringtie": {
+"coverage\_cutoff": 0.01
+},
+"gene\_mapping": {
+"CHLRE\_01g025050v5": "GATA-1",
+"CHLRE\_10g435450v5": "GATA-2"
+},
+"visualization": {
+"show\_p\_values": true
+}
 }
 Running the Pipeline
 
 
-python run_gui.py
+
+python run\_gui.py
 Or step-by-step:
 
 
 
-python align_hisat2.py
-python process_sam_to_bam.py
-python stringtie_expression.py
-python extract_fpkm.py
-python pvalues_log2.py
+python align\_hisat2.py
+python process\_sam\_to\_bam.py
+python stringtie\_expression.py
+python extract\_fpkm.py
+python pvalues\_log2.py
 Features
 Supports paired-end and single-end FASTQ.
 
@@ -143,7 +154,7 @@ SAMtools (via WSL)
 StringTie (via WSL)
 
 Notes
-HISAT2 requires 8 .ht2 index files with base name genome_index.
+HISAT2 requires 8 .ht2 index files with base name genome\_index.
 
 All WSL paths are auto-converted (e.g., /mnt/c/...).
 
@@ -153,50 +164,57 @@ Removing the Environment from PC
 To completely remove all installed programs and settings, follow these steps.
 
 1. Open PowerShell as Administrator
-Press Win + X → select Windows PowerShell (Admin) or Terminal (Admin).
-
+   Press Win + X → select Windows PowerShell (Admin) or Terminal (Admin).
 2. Uninstall WSL and Ubuntu
-Paste the following in PowerShell:
+   Paste the following in PowerShell:
 
 # Uninstall installed Python
+
 winget uninstall Python.Python.3.12
 
 # Uninstall all Python packages
+
 pip uninstall -y PyQt6 pandas numpy scipy seaborn matplotlib pyDESeq2
 
 pip uninstall statsmodels
 
 # Uninstall WSL
+
 wsl --uninstall
 Wait for the uninstallation to finish.
 
 3. Remove all Ubuntu settings and environments
-After that, to delete all Ubuntu settings and environments, open PowerShell (Admin) again:
+   After that, to delete all Ubuntu settings and environments, open PowerShell (Admin) again:
 
 Make sure Ubuntu is completely removed.
 
 4. Remove Python environment in Ubuntu
-If you used a Python virtual environment, run the following commands:
+   If you used a Python virtual environment, run the following commands:
+
 
 
 
 
 # Deactivate the environment
+
 deactivate
 
 # Remove the isolated Python environment
-rm -rf ~/pipeseq_env
+
+rm -rf ~/pipeseq\_env
 5. Remove all installed packages and tools in Ubuntu
 
 
 
 # Uninstall all installed packages
-sudo apt purge -y python3-venv build-essential zlib1g-dev \
-  libbz2-dev liblzma-dev libncurses5-dev libncursesw5-dev \
-  libcurl4-openssl-dev libssl-dev libsqlite3-dev wget curl \
-  git unzip samtools hisat2 stringtie libgl1 libxkbcommon-x11-0
+
+sudo apt purge -y python3-venv build-essential zlib1g-dev   
+libbz2-dev liblzma-dev libncurses5-dev libncursesw5-dev   
+libcurl4-openssl-dev libssl-dev libsqlite3-dev wget curl   
+git unzip samtools hisat2 stringtie libgl1 libxkbcommon-x11-0
 
 # Clean up the system
+
 sudo apt autoremove -y
 sudo apt clean
 6. Remove PipeSeq files and settings
@@ -209,8 +227,10 @@ Delete settings.json if you want to reset all settings:
 
 
 
+
 rm -rf ~/pipeSeq/settings.json
 Delete all intermediate files (e.g., result and log folders):
+
 
 
 
@@ -228,11 +248,14 @@ If you installed the SRA Toolkit, you can remove it with:
 
 
 
+
 winget uninstall SRA.SRA-Toolkit
 9. Clean up the environment
 If you're no longer going to use WSL and Ubuntu:
 
 # Unregister Ubuntu from Windows
+
 wsl --unregister Ubuntu
 Support
 alexnerezenko@gmail.com
+
