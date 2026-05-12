@@ -1,0 +1,6 @@
+{
+    "sratoolkit_path": "C:\\Path\\To\\sratoolkit\\bin",
+    "sra_download_folder": "C:\\Path\\To\\PipeSeq\\Sra",
+    "fastq_output_folder": "C:\\Path\\To\\PipeSeq\\Fastq",
+    "delete_sra_after_conversion": false
+}

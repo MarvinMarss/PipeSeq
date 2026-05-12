@@ -1,0 +1,34 @@
+{
+  "title": "",
+  "xlabel": "Gene names",
+  "ylabel": "Terms",
+  "color_low": "blue",
+  "color_mid": "white",
+  "color_high": "green",
+  "show_p_values": true,
+  "custom_condition_order": [
+    "Starvation N 0.5 hour",
+    "Starvation N 1 hour",
+    "Starvation N 2 hour",
+    "Starvation N 4 hour",
+    "Starvation N 6 hour"
+  ],
+  "custom_gene_order": [
+    "GATA 1",
+    "GATA 2",
+    "GATA 3",
+    "GATA 4",
+    "GATA 5",
+    "GATA 6",
+    "GATA 7",
+    "GATA 8",
+    "GATA 9",
+    "GATA 10",
+    "GATA 11",
+    "GATA 12"
+  ],
+  "sort_conditions_by_max_exp": false,
+  "sort_genes_by_max_exp": false,
+  "remove_color_for_high_p": false,
+  "generate_histograms": false
+}

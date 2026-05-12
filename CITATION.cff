@@ -1,0 +1,7 @@
+cff-version: 1.2.0
+message: "If you use PipeSeq in academic work, please cite the repository."
+title: "PipeSeq"
+authors:
+  - family-names: "MarvinMarss"
+repository-code: "https://github.com/MarvinMarss/PipeSeq"
+license: "MIT"

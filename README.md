@@ -1,261 +1,149 @@
-Environment Setup on a New PC
-Before first use, all dependencies must be installed.
+# PipeSeq
 
-1. Open PowerShell as Administrator
-   Press Win + X → select Windows PowerShell (Admin) or Terminal (Admin).
-2. Install Python and WSL (Ubuntu)
-   In PowerShell, run:
+PipeSeq is a local Windows/WSL desktop workflow for RNA-seq processing. It provides a PyQt6 GUI
+around SRA/FASTQ preparation, HISAT2 alignment, SAM/BAM processing, StringTie expression analysis,
+featureCounts/DESeq2-based statistics and result visualization.
 
+> Russian documentation: [README_RUS.md](README_RUS.md)
 
+## What is included in git
 
-winget install -e --id Python.Python.3.12
-Restart the terminal, then install Python packages:
+This repository keeps the source code, launcher, documentation, examples and small static assets.
+Large runtime files are deliberately not committed:
 
+- raw FASTQ/FQ/SRA files;
+- SAM/BAM outputs;
+- genome FASTA files, GTF/GFF annotations and HISAT2 indexes;
+- generated results and logs;
+- local `Script/settings.json` / `Script/Mind.json`;
+- downloaded FastQC/SRA Toolkit binaries.
 
+The local folder layout is still represented by README placeholders in `Fastq/`, `Sra/`, `Genome/`,
+`Genome/Index/`, `Output/`, `GTF/`, `Results/` and `Tool/`.
 
-pip install PyQt6
-pip install pandas numpy scipy seaborn matplotlib pyDESeq2
-pip install pywin32
-pip install statsmodels
-Install WSL with Ubuntu:
+## Repository layout
 
-wsl --install -d Ubuntu
-Reboot the PC if prompted.
-
-3. After reboot — open PowerShell (Admin):
-
-
-
-wsl --install -d Ubuntu
-wsl
-Ubuntu will launch. Follow the prompts to set a username and password (any memorable values).
-
-4. Inside Ubuntu — set up the environment:
-
-
-
-# System update
-
-sudo apt update \&\& sudo apt upgrade -y
-sudo add-apt-repository universe
-sudo add-apt-repository multiverse
-sudo apt update
-
-sudo apt-get update \&\& sudo apt-get install subread
-
-
-
-# Install required packages
-
-sudo apt install -y python3-venv build-essential zlib1g-dev   
-libbz2-dev liblzma-dev libncurses-dev   
-libcurl4-openssl-dev libssl-dev libsqlite3-dev wget curl   
-git unzip samtools hisat2 stringtie libgl1 libxkbcommon-x11-0
-
-# Create Python virtual environment
-
-python3 -m venv ~/pipeseq\_env
-source ~/pipeseq\_env/bin/activate
-
-# Upgrade pip and install Python packages
-
-pip install --upgrade pip
-pip install pandas numpy scipy seaborn matplotlib pyqt6 pyDESeq2
-5. Running the Pipeline
-Double-click PipeSeq.bat to launch the pipeline GUI.
-
-6. On first launch, configure folder paths inside PipeSeq.
-7. Place the appropriate .fa genome and corresponding .gtf annotation files in the "Genome" folder. If annotation errors occur, enable gtf.fix in PipeSeq.
-8. To begin analysis, input experiment IDs and assigned names in this format:
-
-
-
-SRX8380271-HighLight1; SRX8380270-HighLight2; SRX8380269-HighLight3; SRX5120532-HighLightControl1; SRX5120531-HighLightControl2; SRX5120530-HighLightControl3
-Replicate numbers go at the end. You may also use local .sra files renamed accordingly.
-
-Project Structure
-
-
-
+```text
 PipeSeq/
-├── align\_hisat2.py  
-├── process\_sam\_to\_bam.py  
-├── stringtie\_expression.py  
-├── extract\_fpkm.py  
-├── pvalues\_log2.py  
-├── GTF\_results\_pvalues.py  
-├── temp\_card\_p.py  
-├── fix.gtf.py  
-├── run\_gui.py  
-├── settings.json  
-└── pipeline\_log.txt  
-settings.json Configuration
-json
+├── PipeSeq.bat                 # Windows launcher
+├── Script/
+│   ├── PipeSeq.py              # Main PyQt6 GUI
+│   ├── align_hisat2.py         # FASTQ -> SAM with HISAT2
+│   ├── process_sam_to_bam.py   # SAM -> sorted BAM
+│   ├── stringtie_expression.py # StringTie expression step
+│   ├── deseq2_analysis.py      # featureCounts + PyDESeq2 workflow
+│   ├── extract_*.py            # Expression table extraction helpers
+│   ├── pvalues_*.py            # Statistics helpers
+│   ├── temp_card_p.py          # Heatmap/visualization helper
+│   ├── settings.example.json   # Example pipeline configuration
+│   └── Mind.example.json       # Example GUI memory file
+├── Fastq/                      # Local FASTQ input, ignored by git
+├── Sra/                        # Local SRA input/downloads, ignored by git
+├── Genome/                     # Local genome/annotation files, ignored by git
+├── Output/                     # Local SAM/BAM output, ignored by git
+├── GTF/                        # Local StringTie output, ignored by git
+├── Results/                    # Local final results, ignored by git
+├── Tool/                       # Optional local third-party tools, ignored by git
+└── docs/                       # Maintainer notes
+```
 
-{
-"folders": {
-"fastq\_folder": "path to FASTQ files",
-"bam\_folder": "path for BAM output",
-"gtf\_folder": "path to StringTie GTF files",
-"results\_folder": "path to final tables",
-"genome\_folder": "path to .fa and .gtf files",
-"genome\_index": "path to HISAT2 index"
-},
-"options": {
-"delete\_intermediate\_files": true,
-"use\_fdr\_correction": true,
-"fix\_genome": false
-},
-"stringtie": {
-"coverage\_cutoff": 0.01
-},
-"gene\_mapping": {
-"CHLRE\_01g025050v5": "GATA-1",
-"CHLRE\_10g435450v5": "GATA-2"
-},
-"visualization": {
-"show\_p\_values": true
-}
-}
-Running the Pipeline
+## Requirements
 
+- Windows with PowerShell.
+- Python 3.10 or newer.
+- WSL with Ubuntu for Linux command-line bioinformatics tools.
+- Python packages from `requirements.txt`.
+- WSL packages/tools: HISAT2, SAMtools, StringTie and Subread/featureCounts.
+- Optional local Windows tools in `Tool/`: FastQC and SRA Toolkit.
 
+## Installation
 
-python run\_gui.py
-Or step-by-step:
+Open PowerShell as Administrator and install Python:
 
+```powershell
+winget install -e --id Python.Python.3.12
+```
 
+Create a virtual environment from the repository root:
 
-python align\_hisat2.py
-python process\_sam\_to\_bam.py
-python stringtie\_expression.py
-python extract\_fpkm.py
-python pvalues\_log2.py
-Features
-Supports paired-end and single-end FASTQ.
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
 
-Intelligent processing: sorting, skipping steps, temp file cleanup.
+Install Ubuntu in WSL:
 
-Genome index is auto-generated if missing.
+```powershell
+wsl --install -d Ubuntu
+```
 
-StringTie sensitivity (-c) configurable via GUI.
+Inside Ubuntu, install the required command-line tools:
 
-Transparent logs and visualization.
+```bash
+sudo apt update
+sudo apt install -y git unzip wget curl hisat2 samtools stringtie subread
+```
 
-Dependencies
-Python 3.10+
+## Local data setup
 
-PyQt6
+1. Place FASTQ files in `Fastq/`, or place local SRA files in `Sra/`.
+2. Place the reference genome FASTA and matching annotation GTF/GFF in `Genome/`.
+3. Place a prebuilt HISAT2 index in `Genome/Index/`, or let the pipeline create it when supported.
+4. Put optional local Windows tool bundles in `Tool/`, or install them elsewhere and configure paths
+   in the GUI.
 
-HISAT2 (via WSL)
+On first launch, PipeSeq creates `Script/settings.json` if it does not exist. You can also copy
+`Script/settings.example.json` to `Script/settings.json` and edit the paths manually.
 
-SAMtools (via WSL)
+## Running
 
-StringTie (via WSL)
+On Windows, double-click:
 
-Notes
-HISAT2 requires 8 .ht2 index files with base name genome\_index.
+```text
+PipeSeq.bat
+```
 
-All WSL paths are auto-converted (e.g., /mnt/c/...).
+Or run the GUI directly:
 
-If needed, use fix.gtf.py to correct annotation errors.
+```powershell
+python Script\PipeSeq.py
+```
 
-Removing the Environment from PC
-To completely remove all installed programs and settings, follow these steps.
+The launcher changes into `Script/` before starting the GUI because the pipeline scripts expect
+their configuration files in that folder.
 
-1. Open PowerShell as Administrator
-   Press Win + X → select Windows PowerShell (Admin) or Terminal (Admin).
-2. Uninstall WSL and Ubuntu
-   Paste the following in PowerShell:
+## Experiment IDs
 
-# Uninstall installed Python
+Input experiment IDs and sample names in the GUI in this format:
 
-winget uninstall Python.Python.3.12
+```text
+SRX8380271-HighLight1; SRX8380270-HighLight2; SRX8380269-HighLight3; SRX5120532-HighLightControl1; SRX5120531-HighLightControl2; SRX5120530-HighLightControl3
+```
 
-# Uninstall all Python packages
+Replicate numbers should be placed at the end of the sample name. Local `.sra` files can also be
+renamed using the same naming convention.
 
-pip uninstall -y PyQt6 pandas numpy scipy seaborn matplotlib pyDESeq2
+## Development checks
 
-pip uninstall statsmodels
+```powershell
+python -m py_compile Script\*.py
+```
 
-# Uninstall WSL
+Optional linting:
 
-wsl --uninstall
-Wait for the uninstallation to finish.
+```powershell
+pip install -r requirements-dev.txt
+ruff check Script
+```
 
-3. Remove all Ubuntu settings and environments
-   After that, to delete all Ubuntu settings and environments, open PowerShell (Admin) again:
+## Notes
 
-Make sure Ubuntu is completely removed.
+- HISAT2 index files usually use the basename `genome_index` and produce eight `.ht2` files.
+- Windows paths are converted to WSL paths internally where required.
+- See [docs/DATA_AND_TOOLS.md](docs/DATA_AND_TOOLS.md) for the repository data policy.
 
-4. Remove Python environment in Ubuntu
-   If you used a Python virtual environment, run the following commands:
+## License
 
-
-
-
-
-# Deactivate the environment
-
-deactivate
-
-# Remove the isolated Python environment
-
-rm -rf ~/pipeseq\_env
-5. Remove all installed packages and tools in Ubuntu
-
-
-
-# Uninstall all installed packages
-
-sudo apt purge -y python3-venv build-essential zlib1g-dev   
-libbz2-dev liblzma-dev libncurses5-dev libncursesw5-dev   
-libcurl4-openssl-dev libssl-dev libsqlite3-dev wget curl   
-git unzip samtools hisat2 stringtie libgl1 libxkbcommon-x11-0
-
-# Clean up the system
-
-sudo apt autoremove -y
-sudo apt clean
-6. Remove PipeSeq files and settings
-To completely remove everything related to the pipeline, delete the following folders and files:
-
-Delete the folder with genomes and annotations if it was downloaded.
-
-Delete settings.json if you want to reset all settings:
-
-
-
-
-
-rm -rf ~/pipeSeq/settings.json
-Delete all intermediate files (e.g., result and log folders):
-
-
-
-
-
-rm -rf ~/pipeSeq/results
-rm -rf ~/pipeSeq/logs
-7. Delete the PipeSeq program folder (if locally installed):
-
-
-
-rm -rf ~/pipeSeq
-8. Uninstall SRA Tools
-If you installed the SRA Toolkit, you can remove it with:
-
-
-
-
-
-winget uninstall SRA.SRA-Toolkit
-9. Clean up the environment
-If you're no longer going to use WSL and Ubuntu:
-
-# Unregister Ubuntu from Windows
-
-wsl --unregister Ubuntu
-Support
-alexnerezenko@gmail.com
-
+MIT. See [LICENSE](LICENSE).

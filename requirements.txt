@@ -1,0 +1,9 @@
+matplotlib
+numpy
+pandas
+pydeseq2
+PyQt6
+pywin32; platform_system == "Windows"
+scipy
+seaborn
+statsmodels

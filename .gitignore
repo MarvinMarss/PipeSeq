@@ -1,18 +1,88 @@
-# Build and Release Folders
-bin-debug/
-bin-release/
-[Oo]bj/
-[Bb]in/
+# Python cache/build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
 
-# Other files and folders
-.settings/
+# Local virtual environments
+.venv/
+venv/
+env/
+ENV/
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
+# Local editor and OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+*.lnk
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
+# Local application state
+Script/settings.json
+Script/Mind.json
+Script/*_log.txt
+Script/*_results.txt
+Script/process_log.txt
+
+# Runtime data folders. Keep the folder README files, not user data.
+Fastq/*
+!Fastq/README.md
+Sra/*
+!Sra/README.md
+Output/*
+!Output/README.md
+GTF/*
+!GTF/README.md
+Results/*
+!Results/README.md
+
+# Genomes, annotations, HISAT2 indexes and derived motif/data tables.
+Genome/*
+!Genome/README.md
+!Genome/Index/
+Genome/Index/*
+!Genome/Index/README.md
+
+# Third-party tool bundles should be installed/downloaded locally.
+Tool/*
+!Tool/README.md
+
+# Common large sequencing and bioinformatics outputs
+*.bam
+*.bai
+*.sam
+*.fastq
+*.fq
+*.fastq.gz
+*.fq.gz
+*.sra
+*.fasta
+*.fa
+*.fna
+*.gtf
+*.gff
+*.gff3
+*.bed
+*.bw
+*.bigWig
+*.ht2
+
+# Archives and installers
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar
+*.exe
+*.msi
+*.jar
